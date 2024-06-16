@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pokemonNames = PokemonList.pokemons.map { it.name }
+        val pokemonNames = PokemonList.pokemons.values.map { it.name }
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, pokemonNames)
 
         binding.pokemonList.adapter = adapter
         binding.pokemonList.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            val pokemon = PokemonList.pokemons[position]
+            val pokemon = PokemonList.pokemons[position+1]
             if (pokemon != null) {
                 startPokemonDetailActivity(pokemon.id)
             } else {

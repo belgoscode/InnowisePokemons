@@ -13,12 +13,6 @@ import com.example.innowisepokemons.databinding.ActivityDetailedInfoBinding
 class DetailedInfoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailedInfoBinding
 
-    private lateinit var nameTextView: TextView
-    private lateinit var pictureImageView: ImageView
-    private lateinit var typeTextView: TextView
-    private lateinit var weightTextView: TextView
-    private lateinit var heightTextView: TextView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailedInfoBinding.inflate(layoutInflater)
@@ -30,18 +24,11 @@ class DetailedInfoActivity : AppCompatActivity() {
 
         val pokemonId = intent.getIntExtra("pokemon_id", -1)
         val pokemon = PokemonList.getPokemonById(pokemonId)
-
-        nameTextView = findViewById(R.id.pokemon_name)
-        pictureImageView = findViewById(R.id.pokemon_picture)
-        typeTextView = findViewById(R.id.pokemon_type)
-        weightTextView = findViewById(R.id.pokemon_weight)
-        heightTextView = findViewById(R.id.pokemon_height)
-
-
-        nameTextView.text = pokemon?.name
-        pictureImageView.setImageResource(pokemon?.picture ?: 0)
-        typeTextView.text = pokemon?.type
-        weightTextView.text = "Weight: ${pokemon?.weight} kg"
-        heightTextView.text = "Height: ${pokemon?.height} m"
+        
+        binding.pokemonName.text = pokemon?.name
+        binding.pokemonPicture.setImageResource(pokemon?.picture ?: 0)
+        binding.pokemonType.text = pokemon?.type
+        binding.pokemonWeight.text = "Weight: ${pokemon?.weight} kg"
+        binding.pokemonHeight.text = "Height: ${pokemon?.height} m"
     }
 }

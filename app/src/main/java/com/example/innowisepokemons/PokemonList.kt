@@ -1,8 +1,8 @@
 package com.example.innowisepokemons
 
 object PokemonList {
-    val pokemons: List<Pokemon> = listOf(
-        Pokemon(
+    val pokemons: Map<Int, Pokemon> = mapOf(
+        1 to Pokemon(
             id = 1,
             name = "Bulbasaur",
             picture = R.drawable.bulbasaur,
@@ -10,7 +10,7 @@ object PokemonList {
             height = 0.7,
             weight = 6.9
         ),
-        Pokemon(
+        2 to Pokemon(
             id = 2,
             name = "Ivysaur",
             picture = R.drawable.ivysaur,
@@ -18,7 +18,7 @@ object PokemonList {
             height = 1.0,
             weight = 13.0
         ),
-        Pokemon(
+        3 to Pokemon(
             id = 3,
             name = "Charmander",
             picture = R.drawable.charmander,
@@ -26,18 +26,18 @@ object PokemonList {
             height = 0.6,
             weight = 8.5
         ),
-        Pokemon(
+        4 to Pokemon(
             id = 4,
             name = "Squirtle",
             picture = R.drawable.squirtle,
             type = "Water",
             height = 0.5,
             weight = 9.0
-        ),
+        )
         // Сюда хардкодить покемонов
     )
 
     fun getPokemonById(id: Int): Pokemon? {
-        return pokemons.find { it.id == id }
+        return pokemons[id]
     }
 }
