@@ -25,10 +25,10 @@ class DetailedInfoActivity : AppCompatActivity() {
         val pokemonId = intent.getIntExtra("pokemon_id", -1)
         val pokemon = PokemonList.getPokemonById(pokemonId)
         
-        binding.pokemonName.text = pokemon?.name
-        binding.pokemonPicture.setImageResource(pokemon?.picture ?: 0)
-        binding.pokemonType.text = pokemon?.type
-        binding.pokemonWeight.text = "Weight: ${pokemon?.weight} kg"
-        binding.pokemonHeight.text = "Height: ${pokemon?.height} m"
+        binding.pokemonName.text = pokemon?.name ?: "Unknown pokemon"
+        binding.pokemonPicture.setImageResource(pokemon?.picture ?: R.drawable.errorpicture)
+        binding.pokemonType.text = pokemon?.type ?: "Unknown type"
+        binding.pokemonWeight.text = "Weight: ${pokemon?.weight ?: 4.04} kg"
+        binding.pokemonHeight.text = "Height: ${pokemon?.height ?: 4.04} m"
     }
 }

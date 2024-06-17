@@ -1,7 +1,7 @@
 package com.example.innowisepokemons
 
 object PokemonList {
-    val pokemons: Map<Int, Pokemon> = mapOf(
+    val pokemons: Map<Int, Pokemon?> = mapOf(
         1 to Pokemon(
             id = 1,
             name = "Bulbasaur",
@@ -33,7 +33,18 @@ object PokemonList {
             type = "Water",
             height = 0.5,
             weight = 9.0
-        )
+        ),
+        // Пустой покемон для проверки ошибок
+        5 to null,
+        // Поврежденный покемон для проверки ошибок
+        6 to Pokemon(
+            id = 6,
+            name = null,
+            picture = null,
+            type = null,
+            height = null,
+            weight = null
+        ),
         // Сюда хардкодить покемонов
     )
 

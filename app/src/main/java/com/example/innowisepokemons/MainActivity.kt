@@ -16,16 +16,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pokemonNames = PokemonList.pokemons.values.map { it.name }
+        val pokemonNames = PokemonList.pokemons.values.map { it?.name ?: "Unknown pokemon" }
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, pokemonNames)
 
         binding.pokemonList.adapter = adapter
         binding.pokemonList.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             val pokemon = PokemonList.pokemons[position+1]
-            if (pokemon != null) {
-                startPokemonDetailActivity(pokemon.id)
+            if (pokemon?.id != null) {
+                startPokemonDetailActivity(pokemon?.id)
             } else {
-                Toast.makeText(this, "Error: cant access this pokemon!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Oops! Something went wrong.", Toast.LENGTH_SHORT).show()
             }
         }
     }
