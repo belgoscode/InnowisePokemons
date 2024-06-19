@@ -3,11 +3,15 @@ import com.example.innowisepokemons.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
-import android.widget.AdapterView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
-import com.example.innowisepokemons.PokemonList.pokemons
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -15,18 +19,42 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.pokemonList.layoutManager = LinearLayoutManager(this)
+        binding.pokemonList.adapter = ChoiceAdapter(PokemonList.pokemons) { pokemonId ->
+            startPokemonDetailActivity(pokemonId)
+        }
+    }
 
-        val pokemonNames = PokemonList.pokemons.values.map { it?.name ?: "Unknown pokemon" }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, pokemonNames)
+    class ChoiceAdapter(
+        private val choiceList: Map<Int, Pokemon?>,
+        private val onClick: (Int) -> Unit
+    ) : RecyclerView.Adapter<ChoiceAdapter.ViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val choiceView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.pokemon_choice, parent, false)
+            return ViewHolder(choiceView)
+        }
 
-        binding.pokemonList.adapter = adapter
-        binding.pokemonList.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            val pokemon = PokemonList.pokemons[position+1]
-            if (pokemon?.id != null) {
-                startPokemonDetailActivity(pokemon?.id)
-            } else {
-                Toast.makeText(this, "Oops! Something went wrong.", Toast.LENGTH_SHORT).show()
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val currentView = choiceList[position]
+            holder.imageView.setImageResource(currentView?.picture ?: R.drawable.errorpicture)
+            holder.textView.text = currentView?.name ?: "Unknown pokemon"
+            holder.itemView.setOnClickListener {
+                val id = currentView?.id ?: run {
+                    Toast.makeText(holder.itemView.context, "Oops! Error opening this pokemon.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                onClick(id)
             }
+        }
+
+        override fun getItemCount(): Int {
+            return choiceList.size
+        }
+
+        class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val imageView: ImageView = itemView.findViewById(R.id.choice_image)
+            val textView: TextView = itemView.findViewById(R.id.choice_name)
         }
     }
 
