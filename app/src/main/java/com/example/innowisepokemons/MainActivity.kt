@@ -1,4 +1,5 @@
 package com.example.innowisepokemons
+
 import com.example.innowisepokemons.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -23,6 +25,12 @@ class MainActivity : AppCompatActivity() {
         binding.pokemonList.adapter = ChoiceAdapter(PokemonList.pokemons) { pokemonId ->
             startPokemonDetailActivity(pokemonId)
         }
+        binding.pokemonList.addItemDecoration(
+            DividerItemDecoration(
+                baseContext,
+                (binding.pokemonList.layoutManager as LinearLayoutManager).orientation
+            )
+        )
     }
 
     class ChoiceAdapter(
@@ -41,7 +49,11 @@ class MainActivity : AppCompatActivity() {
             holder.textView.text = currentView?.name ?: "Unknown pokemon"
             holder.itemView.setOnClickListener {
                 val id = currentView?.id ?: run {
-                    Toast.makeText(holder.itemView.context, "Oops! Error opening this pokemon.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        holder.itemView.context,
+                        "Oops! Error opening this pokemon.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
                 onClick(id)
