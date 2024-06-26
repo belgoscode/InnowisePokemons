@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,19 +23,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.pokemonList.layoutManager = LinearLayoutManager(this)
-        binding.pokemonList.adapter = ChoiceAdapter(PokemonList.pokemons) { pokemonId ->
+        val adapter = ChoiceAdapter(PokemonList.pokemons) { pokemonId ->
             startPokemonDetailActivity(pokemonId)
         }
+        binding.pokemonList.adapter = adapter
         binding.pokemonList.addItemDecoration(
             DividerItemDecoration(
                 baseContext,
                 (binding.pokemonList.layoutManager as LinearLayoutManager).orientation
             )
         )
+        adapter.updateAdapter(PokemonList.pokemons)
     }
 
     class ChoiceAdapter(
-        private val choiceList: Map<Int, Pokemon?>,
+        private var choiceList: Map<Int, Pokemon?>,
         private val onClick: (Int) -> Unit
     ) : RecyclerView.Adapter<ChoiceAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,6 +62,11 @@ class MainActivity : AppCompatActivity() {
                 onClick(id)
             }
         }
+
+        fun updateAdapter(newChoiceList: Map<Int, Pokemon?>) {
+            val diffUtilCallback = ChoiceDiffUtilCallback(choiceList, newChoiceList)
+            choiceList = newChoiceList
+            DiffUtil.calculateDiff(diffUtilCallback).dispatchUpdatesTo(this)        }
 
         override fun getItemCount(): Int {
             return choiceList.size
