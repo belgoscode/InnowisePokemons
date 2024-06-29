@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.pokemonList.layoutManager = LinearLayoutManager(this)
-        val adapter = ChoiceAdapter(PokemonList.pokemons) { pokemonId ->
+        val adapter = ChoiceAdapter(PokemonList.pokemons.filterNotNull()) { pokemonId ->
             startPokemonDetailActivity(pokemonId)
         }
         binding.pokemonList.adapter = adapter
@@ -33,11 +33,11 @@ class MainActivity : AppCompatActivity() {
                 (binding.pokemonList.layoutManager as LinearLayoutManager).orientation
             )
         )
-        adapter.updateAdapter(PokemonList.pokemons)
+        adapter.updateAdapter(PokemonList.pokemons.filterNotNull())
     }
 
     class ChoiceAdapter(
-        private var choiceList: Map<Int, Pokemon?>,
+        private var choiceList: List<Pokemon>,
         private val onClick: (Int) -> Unit
     ) : RecyclerView.Adapter<ChoiceAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val currentView = choiceList[position]
-            holder.imageView.setImageResource(currentView?.picture ?: R.drawable.errorpicture)
-            holder.textView.text = currentView?.name ?: "Unknown pokemon"
+            holder.imageView.setImageResource(currentView.picture ?: R.drawable.errorpicture)
+            holder.textView.text = currentView.name ?: "Unknown"
             holder.itemView.setOnClickListener {
-                val id = currentView?.id ?: run {
+                val id = currentView.id ?: run {
                     Toast.makeText(
                         holder.itemView.context,
                         "Oops! Error opening this pokemon.",
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        fun updateAdapter(newChoiceList: Map<Int, Pokemon?>) {
+        fun updateAdapter(newChoiceList: List<Pokemon>) {
             val diffUtilCallback = ChoiceDiffUtilCallback(choiceList, newChoiceList)
             choiceList = newChoiceList
             DiffUtil.calculateDiff(diffUtilCallback).dispatchUpdatesTo(this)        }
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startPokemonDetailActivity(pokemonId: Int) {
         val intent = Intent(this, DetailedInfoActivity::class.java)
-        intent.putExtra("pokemon_id", pokemonId)
+        intent.putExtra("pokemon_id", pokemonId - 1)
         startActivity(intent)
     }
 }
