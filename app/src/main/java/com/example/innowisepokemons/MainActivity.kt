@@ -36,48 +36,6 @@ class MainActivity : AppCompatActivity() {
         adapter.updateAdapter(PokemonList.pokemons.filterNotNull())
     }
 
-    class ChoiceAdapter(
-        private var choiceList: List<Pokemon>,
-        private val onClick: (Int) -> Unit
-    ) : RecyclerView.Adapter<ChoiceAdapter.ViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val choiceView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.pokemon_choice, parent, false)
-            return ViewHolder(choiceView)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val currentView = choiceList[position]
-            holder.imageView.setImageResource(currentView.picture ?: R.drawable.errorpicture)
-            holder.textView.text = currentView.name ?: "Unknown"
-            holder.itemView.setOnClickListener {
-                val id = currentView.id ?: run {
-                    Toast.makeText(
-                        holder.itemView.context,
-                        "Oops! Error opening this pokemon.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@setOnClickListener
-                }
-                onClick(id)
-            }
-        }
-
-        fun updateAdapter(newChoiceList: List<Pokemon>) {
-            val diffUtilCallback = ChoiceDiffUtilCallback(choiceList, newChoiceList)
-            choiceList = newChoiceList
-            DiffUtil.calculateDiff(diffUtilCallback).dispatchUpdatesTo(this)        }
-
-        override fun getItemCount(): Int {
-            return choiceList.size
-        }
-
-        class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val imageView: ImageView = itemView.findViewById(R.id.choice_image)
-            val textView: TextView = itemView.findViewById(R.id.choice_name)
-        }
-    }
-
     private fun startPokemonDetailActivity(pokemonId: Int) {
         val intent = Intent(this, DetailedInfoActivity::class.java)
         intent.putExtra("pokemon_id", pokemonId - 1)
