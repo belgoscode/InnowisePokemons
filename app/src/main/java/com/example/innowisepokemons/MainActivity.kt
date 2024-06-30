@@ -1,4 +1,5 @@
 package com.example.innowisepokemons
+
 import com.example.innowisepokemons.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,6 +11,8 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -20,13 +23,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.pokemonList.layoutManager = LinearLayoutManager(this)
-        binding.pokemonList.adapter = ChoiceAdapter(PokemonList.pokemons) { pokemonId ->
+        val adapter = ChoiceAdapter(PokemonList.pokemons.filterNotNull()) { pokemonId ->
             startPokemonDetailActivity(pokemonId)
         }
+        binding.pokemonList.adapter = adapter
+        binding.pokemonList.addItemDecoration(
+            DividerItemDecoration(
+                baseContext,
+                (binding.pokemonList.layoutManager as LinearLayoutManager).orientation
+            )
+        )
+        adapter.updateAdapter(PokemonList.pokemons.filterNotNull())
     }
 
     class ChoiceAdapter(
-        private val choiceList: Map<Int, Pokemon?>,
+        private var choiceList: List<Pokemon>,
         private val onClick: (Int) -> Unit
     ) : RecyclerView.Adapter<ChoiceAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,16 +48,25 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val currentView = choiceList[position]
-            holder.imageView.setImageResource(currentView?.picture ?: R.drawable.errorpicture)
-            holder.textView.text = currentView?.name ?: "Unknown pokemon"
+            holder.imageView.setImageResource(currentView.picture ?: R.drawable.errorpicture)
+            holder.textView.text = currentView.name ?: "Unknown"
             holder.itemView.setOnClickListener {
-                val id = currentView?.id ?: run {
-                    Toast.makeText(holder.itemView.context, "Oops! Error opening this pokemon.", Toast.LENGTH_SHORT).show()
+                val id = currentView.id ?: run {
+                    Toast.makeText(
+                        holder.itemView.context,
+                        "Oops! Error opening this pokemon.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
                 onClick(id)
             }
         }
+
+        fun updateAdapter(newChoiceList: List<Pokemon>) {
+            val diffUtilCallback = ChoiceDiffUtilCallback(choiceList, newChoiceList)
+            choiceList = newChoiceList
+            DiffUtil.calculateDiff(diffUtilCallback).dispatchUpdatesTo(this)        }
 
         override fun getItemCount(): Int {
             return choiceList.size
@@ -60,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startPokemonDetailActivity(pokemonId: Int) {
         val intent = Intent(this, DetailedInfoActivity::class.java)
-        intent.putExtra("pokemon_id", pokemonId)
+        intent.putExtra("pokemon_id", pokemonId - 1)
         startActivity(intent)
     }
 }
